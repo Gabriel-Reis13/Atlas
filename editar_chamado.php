@@ -5,6 +5,11 @@ if(!isset($_SESSION['usuario'])){
     header ("location: login.php");
     exit();
 }
+
+$consultaCategoria = "SELECT *FROM categorias where status = 1";
+$prepararConsultaCategoria = $conexao->prepare($consultaCategoria);
+$prepararConsultaCategoria-> execute();
+$categorias = $prepararConsultaCategoria->fetchAll();
 $idChamado = $_GET['id'];
 
 $consultaChamado = "SELECT * FROM chamados
@@ -81,15 +86,30 @@ if (isset($_POST['titulo'])) {
              <option value= "critica"<?php if("critica" == $chamado['prioridade']){ echo 'selected';}?>>Crítica</option>
           </select>
     
-          <label for="categoria">Selecione a ctegoria do chamado</label>
-          <select name="categoria" id="categoria">
-             <option value= "suporte"<?php if ("suporte" == $chamado['categoria']){echo 'selected';}?>>Suporte</option>
-             <option value= "financeiro" <?php if ("financeiro" == $chamado['categoria']){echo "selected";}?>>Financeiro</option>
-             <option value= "comercial"<?php if ("comercial" == $chamado['categoria']){echo 'selected';}?>>Comercial</option>
-             <option value= "infraestrutura"<?php if ("infraestrutura" == $chamado['categoria']){echo 'selected';}?>>Infraestrutura</option>
-             <option value= "desenvolvimento"<?php if ("desenvolvimento" == $chamado['categoria']){echo 'selected';}?>>Desenvolvimento</option>
-             <option value= "rh"<?php if ("rh" == $chamado['categoria']){echo 'selected';}?>>RH</option>
-    </select>
+
+
+    <label for="categoria">Selecione a categoria do chamado</label>
+
+<select name="categoria" id="categoria" required>
+
+    <option value="">Selecione a categoria</option>
+
+    <?php foreach ($categorias as $categoria) { ?>
+
+        <option
+            value="<?php echo $categoria['nome']; ?>"
+            <?php if ($categoria['nome'] == $chamado['categoria']) {
+                echo 'selected';
+            } ?>
+        >
+            <?php echo $categoria['nome']; ?>
+        </option>
+
+    <?php } ?>
+
+</select>
+
+
     <label for="descricao">Descrição</label>
     <textarea name="descricao" id="descricao"><?php echo $chamado['descricao']?></textarea>
 

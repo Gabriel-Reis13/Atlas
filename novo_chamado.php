@@ -5,8 +5,11 @@ date_default_timezone_set('America/Sao_Paulo');
 if(!isset($_SESSION['usuario'])){
     header("Location: login.php");
     exit();
-}
-
+}$concultaCategoria = "SELECT *FROM categorias WHERE status =1";
+$prepararConsultaCategoria = $conexao->prepare($concultaCategoria);
+$prepararConsultaCategoria->execute();
+$categorias = $prepararConsultaCategoria->fetchAll();
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 $mensagem = "";
 if(isset($_POST['titulo'])){
    $tituloChamado = $_POST['titulo'];
@@ -65,13 +68,12 @@ $preparandoInsercaoChamado->execute([
 
           <label for="categoria">Selecione a categoria do chamado</label>
         <select name="categoria" id="categoria" required>
-            <option value="">Selecione a categoria</option>
-             <option value= "suporte" >Suporte</option>
-             <option value= "financeiro">Financeiro</option>
-             <option value= "comercial">Comercial</option>
-             <option value= "infraestrutura">Infraestrutura</option>
-             <option value= "desenvolvimento">Desenvolvimento</option>
-             <option value= "rh">RH</option>
+           
+        <?php
+        foreach($categorias as $categorias){?>
+    <option value="<?php echo $categorias['nome']?>"><?php echo $categorias['nome']?></option>
+       <?php }
+        ?>
           </select>
 
           <label for="descricao" >Descrição</label>
