@@ -5,10 +5,29 @@ date_default_timezone_set('America/Sao_Paulo');
 if(!isset($_SESSION['usuario'])){
     header("Location: login.php");
     exit();
-}$concultaCategoria = "SELECT *FROM categorias WHERE status =1";
+}
+$consultaUsuarios = "SELECT *FROM usuarios WHERE status =1";
+$prepararConsultaUsuario= $conexao->prepare($consultaUsuarios);
+$prepararConsultaUsuario->execute();
+$usuarios = $prepararConsultaUsuario->fetchAll();
+
+
+
+
+
+$concultaCategoria = "SELECT *FROM categorias WHERE status =1";
 $prepararConsultaCategoria = $conexao->prepare($concultaCategoria);
 $prepararConsultaCategoria->execute();
 $categorias = $prepararConsultaCategoria->fetchAll();
+
+$consultaPrioridades = "SELECT * FROM prioridades where status =1";
+
+$prepararConsultaPrioridades = $conexao->prepare($consultaPrioridades);
+
+$prepararConsultaPrioridades->execute();
+
+$prioridades = $prepararConsultaPrioridades->fetchAll();
+
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 $mensagem = "";
 if(isset($_POST['titulo'])){
@@ -60,10 +79,17 @@ $preparandoInsercaoChamado->execute([
         <label for="prioridade">Selecione a prioridade do chamado</label>
         <select name="prioridade" id="prioridade" required>
             <option value="">Selecione a prioridade</option>
-             <option value= "baixa">Baixa</option>
-             <option value= "media">Média</option>
-             <option value= "alta">Alta</option>
-             <option value= "critica">Crítica</option>
+           
+    <?php foreach ($prioridades as $prioridade) { ?>
+
+        <option
+            value="<?php echo $prioridade['prioridade']; ?>"
+        >
+            <?php echo $prioridade['prioridade']; ?>
+        </option>
+
+    <?php } ?>
+
           </select>
 
           <label for="categoria">Selecione a categoria do chamado</label>
@@ -81,9 +107,10 @@ $preparandoInsercaoChamado->execute([
 
         <label for="responsavel">Selecione o responsavel do chamado</label>
         <select name="responsavel" id="responsavel" required>
-             <option value="">Selecione o responsavel</option>
-             <option value= "gabriel">Gabriel</option>
-             <option value= "fulano">Fulano</option>
+        <?php foreach($usuarios as $usuario){?>
+            <option value="<?php echo $usuario['id']?>"><?php echo $usuario['nome']?></option>
+           <?php }?>     
+        
         </select>
        
        

@@ -5,6 +5,18 @@ if(!isset($_SESSION['usuario'])){
     header ("location: login.php");
     exit();
 }
+$consultaUsuarios = "SELECT *FROM usuarios WHERE status =1";
+$prepararConsultaUsuario= $conexao->prepare($consultaUsuarios);
+$prepararConsultaUsuario->execute();
+$usuarios = $prepararConsultaUsuario->fetchAll();
+
+$consultaPrioridades = "SELECT * FROM prioridades where status =1";
+
+$prepararConsultaPrioridades = $conexao->prepare($consultaPrioridades);
+
+$prepararConsultaPrioridades->execute();
+
+$prioridades = $prepararConsultaPrioridades->fetchAll();
 
 $consultaCategoria = "SELECT *FROM categorias where status = 1";
 $prepararConsultaCategoria = $conexao->prepare($consultaCategoria);
@@ -80,15 +92,23 @@ if (isset($_POST['titulo'])) {
 
     <label for="prioridade">Selecione a prioridade do chamado</label>
         <select name="prioridade" id="prioridade" required>
-             <option value= "baixa"<?php if("baixa" == $chamado['prioridade']){ echo 'selected';}?>>Baixa</option>
-             <option value= "media"<?php if("media" == $chamado['prioridade']){ echo 'selected';}?>>Média</option>
-             <option value= "alta"<?php if("alta" == $chamado['prioridade']){ echo 'selected';}?>>Alta</option>
-             <option value= "critica"<?php if("critica" == $chamado['prioridade']){ echo 'selected';}?>>Crítica</option>
-          </select>
+
+            <?php foreach ($prioridades as $prioridade) { ?>
+
+    <option
+    value="<?php echo $prioridade['prioridade']; ?>"
+    <?php if ($prioridade['prioridade'] == $chamado['prioridade']) {
+        echo 'selected';
+    } ?>
+>
+    <?php echo $prioridade['prioridade']; ?>
+</option>
+
+<?php } ?>
     
+</select>
 
-
-    <label for="categoria">Selecione a categoria do chamado</label>
+<label for="categoria">Selecione a categoria</label>
 
 <select name="categoria" id="categoria" required>
 
@@ -96,8 +116,7 @@ if (isset($_POST['titulo'])) {
 
     <?php foreach ($categorias as $categoria) { ?>
 
-        <option
-            value="<?php echo $categoria['nome']; ?>"
+        <option value="<?php echo $categoria['nome']; ?>"
             <?php if ($categoria['nome'] == $chamado['categoria']) {
                 echo 'selected';
             } ?>
@@ -108,16 +127,27 @@ if (isset($_POST['titulo'])) {
     <?php } ?>
 
 </select>
-
-
     <label for="descricao">Descrição</label>
     <textarea name="descricao" id="descricao"><?php echo $chamado['descricao']?></textarea>
 
-    <label for="responsavel">Selecione o responsavel do chamado</label>
-        <select name="responsavel" id="responsavel" required>
-             <option value= "gabriel"<?php if ("gabriel" == $chamado['responsavel']){echo 'selected';}?>>Gabriel</option>
-             <option value= "fulano" <?php if ("fulano" == $chamado['responsavel']){echo 'selected';}?>>Fulano</option>
-        </select>
+<label for="responsavel">Selecione o responsável do chamado</label>
+
+<select name="responsavel" id="responsavel" required>
+    <?php foreach ($usuarios as $usuario) { ?>
+
+        <option
+            value="<?php echo $usuario['id']; ?>"
+            <?php if ($usuario['id'] == $chamado['responsavel']) {
+                echo 'selected';
+            } ?>
+        >
+            <?php echo $usuario['nome']; ?>
+        </option>
+
+    <?php } ?>
+
+</select>
+       
         <button type="submit">Salvar</button>
 
         <?php //header("location: meus_chamados.php");
